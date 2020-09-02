@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
+    "target": "esnext",
+    "lib": ["esnext"],
     "allowJs": true,
     "strict": true,
     "module": "esnext",
@@ -8,5 +9,6 @@
     "resolveJsonModule": true,
     "outDir": "dist"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

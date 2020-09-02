@@ -1,5 +1,5 @@
-function hello(name: string): string {
-  return `Hello, ${name}!`;
-}
+import scrape from './scrapeSyllabus';
 
-console.log(hello('World'));
+import scrapeSyllabus from './scrapeSyllabus.js';
+
+scrapeSyllabus();
