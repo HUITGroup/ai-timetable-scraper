@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "allowJs": true,
     "strict": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "outDir": "dist"
+    "removeComments": true,
+    "outDir": "dist",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]
