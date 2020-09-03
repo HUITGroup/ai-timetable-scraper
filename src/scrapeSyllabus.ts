@@ -1,17 +1,16 @@
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 
+let browser: puppeteer.Browser;
 let page: puppeteer.Page;
-
-const getBrowserPage = async () => {
-  // Launch headless Chrome. Turn off sandbox so Chrome can run under root.
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
-  return browser.newPage();
-};
 
 const scrapeSyllabus = async () => {
   if (!page) {
-    page = await getBrowserPage();
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox'],
+      headless: false,
+    });
+    page = await browser.newPage();
   }
 
   await page.goto(
@@ -37,7 +36,7 @@ const scrapeSyllabus = async () => {
     timeout: 10000,
   });
   await page.select('#ctl00_phContents_ucSylList_DDLLine_ddl', '0');
-  await page.waitFor(10000);
+  await page.waitFor(8000);
   await page.waitFor('#ctl00_phContents_ucSylList_gv', {
     timeout: 10000,
   });
@@ -61,6 +60,7 @@ const scrapeSyllabus = async () => {
             colTexts.push(splited.slice(0, -2).join(' '));
           }
         });
+
         const item: ClassItem = {
           semester: colTexts[1],
           courseTitle: colTexts[2],
@@ -75,6 +75,46 @@ const scrapeSyllabus = async () => {
     return items;
   });
   fs.writeFileSync('output/classItems.json', JSON.stringify(classItems));
+
+  const classDetails: any[] = [];
+  for (let i = 0; i < classItems.length; i++) {
+    let btn_idx = String(i + 2);
+    if (btn_idx.length === 1) {
+      btn_idx = '0' + btn_idx;
+    }
+
+    // Press Ctrl key
+    await page.keyboard.down('ControlLeft');
+
+    await page.click(
+      `#ctl00_phContents_ucSylList_gv_ctl${btn_idx}_btnReferJpn`
+    );
+    // Leave Ctrl key
+    await page.keyboard.up('ControlLeft');
+    await page.waitFor(5000);
+
+    const pages = await browser.pages();
+    const newPage = pages[pages.length - 1];
+    await newPage.bringToFront();
+
+    await newPage.waitFor(
+      '#ctl00_phContents_ucSylDetail_ucSummary_lbl_sbj_name',
+      {
+        timeout: 10000,
+      }
+    );
+    classDetails.push(
+      await newPage.evaluate(() => {
+        const element = document.querySelector(
+          '#ctl00_phContents_ucSylDetail_ucSummary_lbl_sbj_name'
+        );
+        return element ? element.textContent : '';
+      })
+    );
+
+    await newPage.close();
+  }
+  fs.writeFileSync('output/classDetails.json', JSON.stringify(classDetails));
 
   console.log(`Classes : ${classItems.length}`);
   console.log('Successfully fetched');
