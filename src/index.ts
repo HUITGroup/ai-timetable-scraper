@@ -1,6 +1,11 @@
 import scrape from './scrapeSyllabus';
 
 import scrapeSyllabus from './scrapeSyllabus.js';
+import fetchParams from './fetchParams.js';
 
-scrapeSyllabus();
+fetchParams().then(() => {
+  process.exit(0);
+});
+
+//scrapeSyllabus();
 //process.exit(0);

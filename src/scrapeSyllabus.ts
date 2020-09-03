@@ -20,11 +20,20 @@ const scrapeSyllabus = async () => {
   await page.waitFor('#ctl00_phContents_ucSylSearchuc_ddl_org', {
     timeout: 10000,
   });
-  await page.select('#ctl00_phContents_ucSylSearchuc_ddl_org', '02');
+  await page.select('#ctl00_phContents_ucSylSearchuc_ddl_org', '14');
   await page.waitFor(100);
   await page.waitFor('#ctl00_phContents_ucSylSearchuc_ddl_fac', {
     timeout: 10000,
   });
+  const options = await page.evaluate((selector) => {
+    const ops: { [key: string]: string } = {};
+    document.querySelectorAll(selector).forEach((value) => {
+      console.log(value);
+      ops[value.textContent] = value.value;
+    });
+    return ops;
+  }, '#ctl00_phContents_ucSylSearchuc_ddl_fac > option');
+  console.log(options);
   await page.select('#ctl00_phContents_ucSylSearchuc_ddl_fac', '05');
   await page.waitFor(100);
   await page.waitFor('#ctl00_phContents_ucSylSearchuc_ctl109_btnSearch', {
