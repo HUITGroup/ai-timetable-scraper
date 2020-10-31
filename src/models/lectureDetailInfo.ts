@@ -8,7 +8,7 @@ type LectureDetailInfo = {
   faculty: string;
   required_type: string;
   lecture_type: string;
-  available_others: true;
+  available_others: boolean;
   language: string;
   keywords: string;
   objectives: string;
@@ -22,6 +22,6 @@ type LectureDetailInfo = {
   websites: string;
   lab: string;
   additional: string;
-}
+};
 
 export default LectureDetailInfo;

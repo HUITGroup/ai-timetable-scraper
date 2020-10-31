@@ -46,13 +46,14 @@ const scrapeSyllabus = async () => {
 
   const basicInfoList: LectureBasicInfo[] = await page.evaluate(() => {
     const list: LectureBasicInfo[] = [];
+    const maxLectures = 1; // 検証のため，取得数を一旦3つまでにした
     document
       .querySelectorAll('#ctl00_phContents_ucSylList_gv > tbody > tr')
       .forEach((row, idx) => {
         if (idx === 0) {
           return;
         }
-        if (idx > 1) {
+        if (idx > maxLectures) {
           return;
         }
 
@@ -84,7 +85,9 @@ const scrapeSyllabus = async () => {
           day: colTexts[4] === '集中' ? -1 : days[colTexts[4][0]],
           period: colTexts[4] === '集中' ? -1 : Number(colTexts[4][1]),
           eligible_grade_bottom: Number(eligibleGrades[0]),
-          eligible_grade_top: eligibleGrades[1] ? Number(eligibleGrades[1]) : -1,
+          eligible_grade_top: eligibleGrades[1]
+            ? Number(eligibleGrades[1])
+            : -1,
           instructor: colTexts[3],
         };
         list.push(basicInfo);
@@ -122,34 +125,100 @@ const scrapeSyllabus = async () => {
     );
 
     const detailInfo = await newPage.evaluate(() => {
-      const courseTitleElem = document.querySelector(
-        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_sbj_name'
-      );
-      const course_title = courseTitleElem && courseTitleElem.textContent
-        ? courseTitleElem.textContent
-        : ' ';
+      const getText = (selector: string) => {
+        const elem = document.querySelector(selector);
+        return elem && elem.textContent ? elem.textContent : null;
+      };
 
-      const subtitleElem = document.querySelector(
-        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_theme_name'
-      );
-      const subtitle = subtitleElem && subtitleElem.textContent
-        ? subtitleElem.textContent
-        : ' '
+      const course_title =
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_sbj_name') || ' ';
 
-      const yearElem = document.querySelector(
-        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_lct_year'
-      );
-      const year = yearElem && yearElem.textContent ? Number(yearElem.textContent) : 0;
+      const subtitle =
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_theme_name') ||
+        ' ';
 
-      const eligibleClassElem = document.querySelector(
-        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_class_name'
+      const year = Number(
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_lct_year')
       );
-      const eligible_class = eligibleClassElem && eligibleClassElem.textContent ? eligibleClassElem.textContent : '';
 
-      const creditElem = document.querySelector(
-        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_credits'
+      const eligible_class =
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_class_name') || '';
+
+      const credit = Number(
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_credits')
       );
-      const credit = creditElem && creditElem.textContent ? Number(creditElem.textContent) : 0;
+
+      const lecture_type =
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_type_name') || '';
+
+      const available_others =
+        getText('#ctl00_phContents_ucSylDetail_ucSummary_lbl_other_fac') ===
+        '可';
+
+      const language =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucSummary_lbl_num_language_name'
+        ) || '';
+
+      const keywords =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentKeyWord_lblDetail'
+        ) || '';
+
+      const objectives =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentAim_lblDetail'
+        ) || '';
+
+      const goals =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentTarget_lblDetail'
+        ) || '';
+
+      const schedule =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentSchedule_lblDetail'
+        ) || '';
+
+      const homework =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentPrestudy_lblDetail'
+        ) || '';
+
+      const grading =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentGrading_lblDetail'
+        ) || '';
+
+      const requirements =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentExperience_Note_lblDetail'
+        ) || '';
+
+      const textbooks =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ucContentTextBooks_lblDetail'
+        ) || '';
+
+      const reading_list =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentReferenceBooks_lblDetail'
+        ) || '';
+
+      const websites =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentUrl_lblDetail'
+        ) || '';
+
+      const lab =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentWebsite_lblDetail'
+        ) || '';
+
+      const additional =
+        getText(
+          '#ctl00_phContents_ucSylDetail_ucContents_ContentNote_lblDetail'
+        ) || '';
 
       const detail: LectureDetailInfo = {
         course_title,
@@ -157,24 +226,24 @@ const scrapeSyllabus = async () => {
         year,
         eligible_class,
         credit,
-        degree: '',
-        faculty: '',
+        degree: '学士課程',
+        faculty: '工学部',
         required_type: '選択科目',
-        lecture_type: '',
-        available_others: true,
-        language: '',
-        keywords: '',
-        objectives: '',
-        goals: '',
-        schedule: '',
-        homework: '',
-        grading: '',
-        requirements: '',
-        textbooks: '',
-        reading_list: '',
-        websites: '',
-        lab: '',
-        additional: '',
+        lecture_type,
+        available_others,
+        language,
+        keywords,
+        objectives,
+        goals,
+        schedule,
+        homework,
+        grading,
+        requirements,
+        textbooks,
+        reading_list,
+        websites,
+        lab,
+        additional,
       };
       return detail;
     });
