@@ -1,8 +1,9 @@
-type LectureBasicInfo {
+type LectureBasicInfo = {
   semester: string;
-  year: number;
   day: number;
   period: number;
+  eligible_grade_bottom: number,
+  eligible_grade_top: number,
   instructor: string;
 }
 

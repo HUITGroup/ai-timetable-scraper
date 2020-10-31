@@ -9,7 +9,7 @@ fetchParams().then(() =>
 */
 
 scrapeSyllabus().then((json) => {
-  postSyllabus(json[0]).then(() => {
-    process.exit(0);
-  });
+  /*postSyllabus(json[0]).then(() => {
+  });*/
+  process.exit(0);
 });

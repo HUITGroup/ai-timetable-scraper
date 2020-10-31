@@ -52,7 +52,7 @@ const scrapeSyllabus = async () => {
         if (idx === 0) {
           return;
         }
-        if (idx > 5) {
+        if (idx > 1) {
           return;
         }
 
@@ -77,11 +77,14 @@ const scrapeSyllabus = async () => {
           日: 6,
         };
 
+        const eligibleGrades = colTexts[5].split('〜');
+
         const basicInfo: LectureBasicInfo = {
           semester: colTexts[1],
-          year: Number(colTexts[5]),
           day: colTexts[4] === '集中' ? -1 : days[colTexts[4][0]],
           period: colTexts[4] === '集中' ? -1 : Number(colTexts[4][1]),
+          eligible_grade_bottom: Number(eligibleGrades[0]),
+          eligible_grade_top: eligibleGrades[1] ? Number(eligibleGrades[1]) : -1,
           instructor: colTexts[3],
         };
         list.push(basicInfo);
@@ -122,17 +125,38 @@ const scrapeSyllabus = async () => {
       const courseTitleElem = document.querySelector(
         '#ctl00_phContents_ucSylDetail_ucSummary_lbl_sbj_name'
       );
+      const course_title = courseTitleElem && courseTitleElem.textContent
+        ? courseTitleElem.textContent
+        : ' ';
+
+      const subtitleElem = document.querySelector(
+        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_theme_name'
+      );
+      const subtitle = subtitleElem && subtitleElem.textContent
+        ? subtitleElem.textContent
+        : ' '
+
+      const yearElem = document.querySelector(
+        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_lct_year'
+      );
+      const year = yearElem && yearElem.textContent ? Number(yearElem.textContent) : 0;
+
+      const eligibleClassElem = document.querySelector(
+        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_class_name'
+      );
+      const eligible_class = eligibleClassElem && eligibleClassElem.textContent ? eligibleClassElem.textContent : '';
+
+      const creditElem = document.querySelector(
+        '#ctl00_phContents_ucSylDetail_ucSummary_lbl_credits'
+      );
+      const credit = creditElem && creditElem.textContent ? Number(creditElem.textContent) : 0;
 
       const detail: LectureDetailInfo = {
-        course_title:
-          courseTitleElem && courseTitleElem.textContent
-            ? courseTitleElem.textContent
-            : '',
-        subtitle: '',
-        eligible_grade_bottom: -1,
-        eligible_grade_top: -1,
-        eligible_class: '',
-        credit: 0,
+        course_title,
+        subtitle,
+        year,
+        eligible_class,
+        credit,
         degree: '',
         faculty: '',
         required_type: '選択科目',

@@ -1,8 +1,7 @@
-type LectureDetailInfo {
+type LectureDetailInfo = {
   course_title: string;
   subtitle: string;
-  eligible_grade_bottom: number;
-  eligible_grade_top: number;
+  year: number;
   eligible_class: string;
   credit: number;
   degree: string;
