@@ -46,7 +46,7 @@ const scrapeSyllabus = async () => {
 
   const basicInfoList: LectureBasicInfo[] = await page.evaluate(() => {
     const list: LectureBasicInfo[] = [];
-    const maxLectures = 1; // 検証のため，取得数を一旦3つまでにした
+    const maxLectures = 3; // 検証のため，取得数を一旦3つまでにした
     document
       .querySelectorAll('#ctl00_phContents_ucSylList_gv > tbody > tr')
       .forEach((row, idx) => {
@@ -258,6 +258,9 @@ const scrapeSyllabus = async () => {
     infoList.push({ ...basicInfo, ...detailInfoList[idx] });
   });
 
+  if (!fs.existsSync('output')) {
+    fs.mkdirSync('output');
+  }
   fs.writeFileSync(
     'output/lectureInfoList.json',
     JSON.stringify(infoList, null, 2)

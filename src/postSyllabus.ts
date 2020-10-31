@@ -8,7 +8,6 @@ const postSyllabus = async (json: LectureInfo) => {
     body: JSON.stringify(json),
     headers: { 'Content-Type': 'application/json' },
   };
-  console.log(json);
   const res = await fetch(postUrl, options).catch((e) => console.log(e));
   return res;
 };
