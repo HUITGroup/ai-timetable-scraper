@@ -1,5 +1,7 @@
 import scrapeSyllabus from './scrapeSyllabus.js';
 import fetchParams from './fetchParams.js';
+import postSyllabus from './postSyllabus.js';
+import LectureInfo from './models/lectureInfo.js';
 
 /*
 fetchParams().then(() => 
@@ -7,5 +9,7 @@ fetchParams().then(() =>
 */
 
 scrapeSyllabus().then((json) => {
-  const apiUrl=''
-  process.exit(0)});
+  postSyllabus(json[0]).then(() => {
+    process.exit(0);
+  });
+});
